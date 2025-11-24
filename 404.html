@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Redirecting...</title>
+
+  <script>
+    ((L, w) => {
+      const lib = "'";
+      const root = '/';
+
+      if (typeof BigInt === 'undefined' || !BigInt) {
+        L.href = root + lib + "/compatibility.html";
+      }
+
+      const _ = (url) => {
+        return new Promise((r, e) => {
+          if (true || typeof fetch === 'undefined' || !fetch) {
+            try {
+              let x = new XMLHttpRequest();
+              x.open('GET', url, true);
+              x.addEventListener('error', e);
+              x.addEventListener('abort', e);
+              x.addEventListener('loadend', function () {
+                if (this.readyState == 4 && this.status == 200) {
+                  r(JSON.parse(this.responseText));
+                }
+                e();
+              });
+
+              x.send();
+            } catch (_e) {
+              e();
+            }
+          } else {
+            fetch(url).then((r) => {
+              return r.json();
+            }).then((u) => {
+              r(u);
+            }).catch(() => {
+              e();
+            });
+          }
+        });
+      };
+
+      const e04 = (e, m) => {
+        if (m) console.warn(m);
+        //L.href = root + lib + '/error.html?err=' + e + '&q=' + L.href;
+      };
+
+      const Q = ((x) => {
+        try {
+          return x.groups.q.replace(/^([\/_?]+|\/?(index|404)\.html)+/i, '');
+        } catch (error) {
+          console.warn(x);
+          e04('nomatch', "Invalid query string.");
+        }
+      })(L.href.match(/https?:\/\/[^\/$]+(?<q>.*)$/i));
+
+      if (Q.length === 0) {
+        L.href = root + lib + "/index.html";
+        return;
+      }
+
+      w.iroot = (base, root) => {
+        if (typeof base !== 'bigint' || typeof root !== 'bigint') throw new Error("Arguments must be bigints.");
+
+        let s = base + 1n;
+        let k1 = root - 1n;
+        let u = base;
+        while (u < s) {
+          s = u;
+          u = ((u * k1) + base / (u ** k1)) / root;
+        }
+        return s;
+      };
+
+      w.base = async (n, f, t) => {
+        if (!n || (n + '').trim().length === 0) {
+          return '0';
+        }
+        return ((b10) => {
+          /* bigInt -> char */
+          let to = (n1, c) => {
+            n1 = BigInt(n1);
+            var l = BigInt(c.length);
+            let z = 0n;
+            var r = '';
+            while (n1 > z) {
+              r = c[n1 % l] + r;
+              n1 = BigInt(n1 / l);
+            }
+
+            return r;
+          };
+
+          /* char -> bigInt */
+          let from = (s, c) => {
+            var r = 0n;
+            let cc = BigInt(s.length);
+            let bs = BigInt(c.length);
+            s = typeof s === 'string' ? s.split("") : s;
+            return (cc === 1) ? c.indexOf(s[0]) : s.reduce((a, p) => {
+              a = (typeof a === 'string') ? (BigInt(c.indexOf(a)) * (bs ** BigInt(--cc))) : a;
+              let k = BigInt(c.indexOf(p));
+              let r = k * ((cc === 1) ? 1n : bs ** BigInt(--cc));
+              return a + r;
+            });
+          };
+
+          f = f === 10 ? b10 : f;
+          t = t === 10 ? b10 : t;
+
+          if (f.length !== 10 && t.length !== 10) {
+            return to(from(n, f), t);
+          }
+
+          if (f.length === 10 && t.length === 10) {
+            return n;
+          }
+
+          if (f.length === 10) {
+            return to(n, t);
+          }
+
+          var r = from(n, f);
+
+          return (r >= Number.MAX_SAFE_INTEGER) ? r : Number(r);
+        })('0123456789');
+      };
+
+      _(root + lib + "/cfg.json").then((cfg) => {
+        var buri = w.buri = cfg.buri;
+        var bnix = w.bnix = cfg.bnix;
+        cfg.db = cfg.db ? cfg.db.trim().replace(/\/*$/, '') : root + lib;
+        /* tornar a menor string, mas com caracteres aceitos para pastas */
+        w.base(Q, w.buri, bnix).then((p) => {
+          _(cfg.db + "/code/" + p.split('').join('/') + '.json').then((d) => {
+            _(cfg.db + "/hash/" + d.body[0].split('').join('/') + '.json').then((u) => {
+              L.href = u.body[0];
+            }).catch(() => {
+              e04('nohash', 'HASH not found.');
+            });
+          }).catch(() => {
+            e04('nocd', 'CODE not found.');
+          });
+        });
+      }).catch(() => {
+        e04('nocfg', 'CFG not found.');
+      });
+    })(window.location, window);
+  </script>
+
+  <style>
+    noscript,
+    .lds {
+      width: calc(3 * 1.25rem);
+      height: calc(3 * 1.25rem);
+
+      position: fixed;
+      top: 50vh;
+      left: 50vw;
+      margin-left: calc(-1.5 * 1.25rem);
+      margin-top: calc(-1.5 * 1.25rem);
+    }
+
+    .lds div {
+      box-sizing: border-box;
+      display: block;
+      position: absolute;
+      width: 3rem;
+      height: 3rem;
+      margin: 8px;
+      border: 8px solid #ccc;
+      border-radius: 50%;
+      animation: lds 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      border-color: #ccc transparent transparent transparent;
+    }
+
+    .lds div:nth-child(1) {
+      animation-delay: -0.45s;
+    }
+
+    .lds div:nth-child(2) {
+      animation-delay: -0.3s;
+    }
+
+    .lds div:nth-child(3) {
+      animation-delay: -0.15s;
+    }
+
+    @keyframes lds {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    * {
+      font-family: "Noto Sans", "Tahoma", "Arial", "Sans-serif" !important;
+      line-height: 1.5rem;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+
+    noscript {
+      display: block;
+      width: 280px;
+      max-width: 280px;
+      height: 160px;
+      margin-left: calc(-140px - 1rem);
+      margin-top: calc(-80px - .5rem);
+      background: rgba(255, 255, 255, .9);
+      padding: .5rem 1rem;
+      border-left: .5rem solid #eee;
+    }
+
+    noscript span {
+      opacity: .6;
+      font-size: .9rem;
+    }
+
+    noscript p {
+      margin-top: .5rem;
+      font-weight: 600;
+    }
+
+    noscript p span {
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="lds">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <noscript><span>There is something <strong>wrong</strong> here!</span>
+    <p><span>#noScript</span> <u>Javascript is disabled</u>, preventing us from directing you to the address.</p>
+  </noscript>
+</body>
+
+</html>

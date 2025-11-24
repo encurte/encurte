@@ -1,0 +1,27 @@
+{
+	"name": "url-segment-db",
+	"version": "1.0.0",
+	"description": "Banco de dados hierárquico baseado em diretórios e hash para registrar URLs, domínios e queries.",
+	"type": "module",
+	"scripts": {
+		"add": "node ./scripts/index.js add",
+		"resolve": "node ./scripts/index.js resolve",
+		"list": "node ./scripts/index.js list"
+	},
+	"dependencies": {
+		"@actions/core": "^1.11.1",
+		"@actions/github": "^6.0.0"
+	},
+	"engines": {
+		"node": ">=18"
+	},
+	"keywords": [
+		"github-actions",
+		"shortner",
+		"url",
+		"redirect",
+		"json"
+	],
+	"author": "Jean Carlo EM",
+	"license": "MIT"
+}

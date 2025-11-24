@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script>
+    let x = location.search.trim().replace(/^[\/?]+/, '');
+    if (x.length > 0) {
+      location.href = "/" + x;
+    } else {
+      location.href = "/'/index.html";
+    }
+  </script>
+</head>
+
+</html>
